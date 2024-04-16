@@ -7,12 +7,13 @@
 
     <title>Selenium JSON Generator</title>
 
-    <link rel="icon" type="image/x-icon" href="https://cdn.icon-icons.com/icons2/2699/PNG/512/infor_logo_icon_169669.png">
+    <link rel="icon" type="image/x-icon"
+        href="https://cdn.icon-icons.com/icons2/2699/PNG/512/infor_logo_icon_169669.png">
     <link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css" />
     <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    
+
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
@@ -60,24 +61,26 @@
     <py-script src="./main.py"></py-script>
 
     <section>
-        <div class="container my-5 py-5 text-dark shadow-lg rounded" >
+        <div class="container my-5 py-5 text-dark shadow-lg rounded">
             <!-- <div class="row d-flex justify-content-center px-4" >
                 <div class="alert alert-primary w-100" role="alert">
                     This is a JSON generator for SeleniumTestPlanner
                 </div>
             </div> -->
-            <div class="row d-flex justify-content-center p-3" >
+            <div class="row d-flex justify-content-center p-3">
                 <div class="col">
                     <div class="w-100">
                         <h5 class="font-weight-bold mb-4">Enter test plans below (exclude .xml): </h5>
                         <div class="form-outline">
-                            <textarea class="form-control shadow-sm" id="area" rows="6" placeholder="TEST_PLAN_XXX"></textarea>
+                            <textarea class="form-control shadow-sm" id="area" rows="6"
+                                placeholder="TEST_PLAN_XXX"></textarea>
                         </div>
                         <div class="d-flex justify-content-between mt-3">
-                            <button type="submit" id="submit-button" class="btn btn-success text-uppercase shadow rounded"
-                                pys-onClick="my_function">
+                            <button type="submit" id="submit-button"
+                                class="btn btn-success text-uppercase shadow rounded" onclick="generateTestPlanner()">
+                                <!-- pys-onClick="my_function" -->
                                 Generate
-                                <py-script src="./main.py"></py-script>
+                                <!-- <py-script src="./main.py"></py-script> -->
                             </button>
                             <button onclick="resetFields()" class="btn btn-danger text-uppercase shadow rounded">
                                 Reset
@@ -91,7 +94,7 @@
                             <h5 class="font-weight-bold">Generated JSON: </h5>
                             <span id="copy-button" onclick="copyCodeBlock()">Copy</span>
                         </div>
-                        
+
                         <div class="form-outline bg-dark rounded text-monospace p-3">
                             <pre id="test-output" class="text-monospace text-white"></pre>
                         </div>
@@ -122,8 +125,8 @@
             try {
                 document.execCommand("copy");
                 copyButton.innerText = "Copied!";
-                setTimeout(function(){
-                copyButton.innerText = "Copy";
+                setTimeout(function () {
+                    copyButton.innerText = "Copy";
                 }, 2000);
             } catch (err) {
                 console.error("Unable to copy text:", err);
@@ -133,6 +136,39 @@
             }
 
             // alert("Copied the text: " + range);
+        }
+
+        function generateTestPlanner() {
+            var body =
+            {
+                "execution": [
+                    {
+                        "executionType": "SSO_SIMPLE",
+                        "smoke": [],
+                        "setup": [],
+                        "main": [],
+                        "after": []
+                    }
+                ]
+            }
+
+            var testPlans = document.getElementById("area").value;
+            var testPlansName = testPlans.split(/[ .:;?!~,`"&|()<>{}\[\]\r\n/\\]+/);
+            var len = testPlansName.length;
+            console.log("Total Test Plans: "+ len);
+
+            for (var i = 0; i < len; i++) {
+                testPlansName[i] = testPlansName[i];
+                body['execution'][0]['smoke'].push({
+                    "priorityNumber": 1,
+                    "testPlanName": testPlansName[i] + ".xml"
+                });
+                console.log(body);
+            }
+
+            console.log("Test Plans: " + testPlansName);
+            console.log(body);
+            document.getElementById('test-output').innerHTML = JSON.stringify(body, undefined, 2);
         }
     </script>
 
