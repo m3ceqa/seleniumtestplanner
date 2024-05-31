@@ -66,7 +66,6 @@
     .dark-mode .container {
         background-color: #222831;
     }
-
 </style>
 
 <body>
@@ -82,8 +81,16 @@
                     <div class="w-100">
                         <h5 class="font-weight-bold mb-4">Enter test plans below (exclude .xml): </h5>
                         <div class="form-outline">
-                            <textarea class="form-control shadow-sm" id="area" rows="6"
-                                placeholder="TEST_PLAN_XXX"></textarea>
+                            <textarea class="form-control shadow-sm mb-3" id="smoke" rows="4"
+                                placeholder="SMOKE_XXX"></textarea>
+                        </div>
+                        <div class="form-outline">
+                            <textarea class="form-control shadow-sm mb-3" id="main" rows="4"
+                                placeholder="MAIN_XXX"></textarea>
+                        </div>
+                        <div class="form-outline">
+                            <textarea class="form-control shadow-sm" id="after" rows="4"
+                                placeholder="AFTER_XXX"></textarea>
                         </div>
                         <div class="d-flex justify-content-between mt-3">
                             <button type="submit" id="submit-button"
@@ -124,7 +131,9 @@
 
     <script>
         function resetFields() {
-            document.getElementById('area').value = '';
+            document.getElementById('smoke').value = '';
+            document.getElementById('main').value = '';
+            document.getElementById('after').value = '';
             document.getElementById('test-output').innerHTML = '';
         }
 
@@ -166,21 +175,59 @@
                 ]
             }
 
-            var testPlans = document.getElementById("area").value;
-            var testPlansName = testPlans.split(/[ :;?!~,`"&|()<>{}\[\]\r\n/\\]+/);
-            var len = testPlansName.length;
-            console.log("Total Test Plans: " + len);
+            var smokeTestPlans = document.getElementById("smoke").value;
+            var mainTestPlans = document.getElementById("main").value;
+            var afterTestPlans = document.getElementById("after").value;
+            var smokeTestPlansName = smokeTestPlans.split(/[ :;?!~,`"&|()<>{}\[\]\r\n/\\]+/);
+            var mainTestPlansName = mainTestPlans.split(/[ :;?!~,`"&|()<>{}\[\]\r\n/\\]+/);
+            var afterTestPlansName = afterTestPlans.split(/[ :;?!~,`"&|()<>{}\[\]\r\n/\\]+/);
+            var smokeLen = smokeTestPlansName.length;
+            var mainLen = mainTestPlansName.length;
+            var afterLen = afterTestPlansName.length;
+            var totalTestPlans = smokeLen + mainLen + afterLen
 
-            for (var i = 0; i < len; i++) {
-                testPlansName[i] = testPlansName[i];
-                body['execution'][0]['smoke'].push({
-                    "priorityNumber": 1,
-                    "testPlanName": testPlansName[i] + ".xml"
-                });
-                console.log(body);
+            console.log("Total Smoke Test Plans: " + smokeLen);
+            console.log("Total Main Test Plans: " + mainLen);
+            console.log("Total After Test Plans: " + afterLen);
+            console.log("Total Test Plans: " + totalTestPlans);
+
+            // Smoke Test Plans
+            if (smokeTestPlans != '') {
+                for (var i = 0; i < smokeLen; i++) {
+                    smokeTestPlansName[i] = smokeTestPlansName[i];
+                    body['execution'][0]['smoke'].push({
+                        "priorityNumber": 1,
+                        "testPlanName": smokeTestPlansName[i] + ".xml"
+                    });
+                    console.log(body);
+                }
             }
 
-            console.log("Test Plans: " + testPlansName);
+            // Main Test Plans
+            if (mainTestPlans != '') {
+                for (var i = 0; i < mainLen; i++) {
+                    mainTestPlansName[i] = mainTestPlansName[i];
+                    body['execution'][0]['main'].push({
+                        "priorityNumber": 1,
+                        "testPlanName": mainTestPlansName[i] + ".xml"
+                    });
+                    console.log(body);
+                }
+            }
+
+            // After Test Plans
+            if (afterTestPlans != '') {
+                for (var i = 0; i < afterLen; i++) {
+                    afterTestPlansName[i] = afterTestPlansName[i];
+                    body['execution'][0]['after'].push({
+                        "priorityNumber": 1,
+                        "testPlanName": afterTestPlansName[i] + ".xml"
+                    });
+                    console.log(body);
+                }
+            }
+
+            console.log("Test Plans: " + smokeTestPlansName + mainTestPlansName + afterTestPlansName);
             console.log(body);
             document.getElementById('test-output').innerHTML = JSON.stringify(body, undefined, 4);
         }
